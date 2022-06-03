@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="740589b9-628d-47a8-9be0-a4249332dd42" name="Changes" comment="">
-      <change beforePath="$USER_HOME$/Desktop/cicd_kube/Jenkinsfile" beforeDir="false" afterPath="$USER_HOME$/Desktop/cicd_kube/Jenkinsfile" afterDir="false" />
+      <change beforePath="$USER_HOME$/Desktop/cicd_kube/.idea/workspace.xml" beforeDir="false" afterPath="$USER_HOME$/Desktop/cicd_kube/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$USER_HOME$/Desktop/cicd_kube/dockermultistage/Dockerfile" beforeDir="false" afterPath="$USER_HOME$/Desktop/cicd_kube/dockermultistage/Dockerfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
