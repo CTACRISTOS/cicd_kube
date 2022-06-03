@@ -53,16 +53,16 @@ pipeline{
         stage('build multistage image') {
             steps{
                 script{
-                    dockerImage = docker.build( registry + ":$BUILD_ID", "./dockermultistage/")
+                    dockerImage = docker.build( registry + ":$BUILD_NUMBER", "./dockermultistage/")
 
                 }
             }
         }
-        stage('upload image to nexus'){
+        stage('upload image to dockerhub'){
             steps{
                 script {
                     docker.withRegistry('', registryCredential){
-                        dockerImage.push("$BUILD_ID")
+                        dockerImage.push("$BUILD_NUMBER")
                         dockerImage.push('latest')
                     }
                 }
@@ -70,13 +70,9 @@ pipeline{
         }
         stage('remove local image') {
             steps{
-                sh "docker rmi $registry:$BUILD_ID"
+                sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
-        stage('K8s Deploy'){
-            steps{
-                sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${registry}:{BUILD_ID} --namespace pipehelm"
-            }
-        }
+        
     }
 }
