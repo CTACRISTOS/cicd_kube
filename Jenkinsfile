@@ -5,7 +5,7 @@ pipeline{
     }
     environment{
         registryCredential = 'dockerhub'
-        registry = "ctacristos/vprofile_repo"
+        registry = "ctacristos/vprofileimg"
 
     }
     stages {
@@ -73,6 +73,6 @@ pipeline{
                 sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
-        
+
     }
 }
