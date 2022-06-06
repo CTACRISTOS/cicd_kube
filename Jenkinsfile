@@ -63,7 +63,7 @@ pipeline{
         stage('build multistage image') {
             steps{
                 script{
-                    dockerImage = docker.build( globalDynamicVars.registry + ":"+globalDynamicVars.imageTag, "./dockermultistage/")
+                    dockerImage = docker.build( globalDynamicVars.registry + ":"+globalDynamicVars.imageTag)
 
                 }
             }
