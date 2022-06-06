@@ -4,11 +4,11 @@ metadata:
   name: jenkins-admin
 rules:
 - apiGroups: [""]
-  resources: ["pods", "secrets", "services", "deployments"]
-  verbs: ["get", "watch", "list", "create"]
+  resources: ["pods", "secrets", "services"]
+  verbs: ["get", "watch", "list", "create", "update"]
 - apiGroups: ["apps"]
-  resources: ["pods", "secrets", "services", "deployments"]
-  verbs: ["get", "watch", "list", "create"]
+  resources: ["deployments"]
+  verbs: ["get", "watch", "list", "create", "update"]
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
