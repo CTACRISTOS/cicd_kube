@@ -1,3 +1,4 @@
+def globalDynamicVars=[:]
 pipeline{
     agent any
     tools{
@@ -17,11 +18,20 @@ pipeline{
         }
         stage('Test'){
             steps{
+                script{
+                    def pom=readMavenPom file: 'pom.xml'
+
+                    globalDynamicVars.appName=pom.artifactId
+                    globalDynamicVars.appVersion=pom.version
+                    globalDynamicVars.imageTag="${globalDynamicVars.appVersion}-${BUILD_NUMBER}"
+                    globalDynamicVars.registry=registry
+                }
                 sh 'mvn test'
             }
         }
         stage('INTEGRATION TEST'){
             steps {
+
                 sh 'mvn verify -DskipUnitTests'
             }
         }
@@ -53,7 +63,7 @@ pipeline{
         stage('build multistage image') {
             steps{
                 script{
-                    dockerImage = docker.build( registry + ":$BUILD_NUMBER", "./dockermultistage/")
+                    dockerImage = docker.build( globalDynamicVars.registry + ":"+globalDynamicVars.imageTag, "./dockermultistage/")
 
                 }
             }
@@ -62,7 +72,7 @@ pipeline{
             steps{
                 script {
                     docker.withRegistry('', registryCredential){
-                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push(globalDynamicVars.imageTag)
                         dockerImage.push('latest')
                     }
                 }
@@ -70,9 +80,45 @@ pipeline{
         }
         stage('remove local image') {
             steps{
-                sh "docker rmi $registry:$BUILD_NUMBER"
+                sh "docker rmi ${globalDynamicVars.registry}:${globalDynamicVars.imageTag}"
             }
         }
+
+    }
+}
+podTemplate(containers: [
+        containerTemplate(
+                name: 'jnlp',
+                image: 'jenkins/inbound-agent:latest'
+        ),
+
+        containerTemplate(
+                name: 'helm',
+                image: 'alpine/helm',
+                command: 'sleep',
+                args: '30d'
+        )
+
+]) {
+
+    node(POD_LABEL) {
+        stage('helm deploy') {
+
+            container('helm') {
+                stage('helm job') {
+                    git branch: 'main', url: 'https://github.com/CTACRISTOS/cicd_kube.git'
+                    sh '''
+                    echo "helm"
+                    '''
+                    sh '''
+                    helm version
+                    '''
+                    sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${globalDynamicVars.registry}:${globalDynamicVars.imageTag} --namespace clean"
+                }
+            }
+        }
+
+
 
     }
 }
